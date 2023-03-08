@@ -70,23 +70,20 @@ class PromptGenerator():
 
     def simple(self):
         import random
-        prompt = open('C:\\Users\\chsjk\\PycharmProjects\\stable-diffusion-webui\\prompt3.txt', encoding='utf-8').read().splitlines()
+        path = os.path.join(os.getcwd(), 'prompt3.txt')
+        prompt = open(path, encoding='utf-8').read().splitlines()
         generated = []
         num_word = 6
         non_artists = [art for art in prompt if not art.startswith("art by")]
         # artists = [art for art in prompt if art.startswith("art by")]
         while len(sorted(set(generated), key=lambda d: generated.index(d))) < num_word:
-            rand = random.randint(0, len(non_artists))
+            rand = random.randint(0, len(non_artists)-1)
             generated.append(non_artists[rand])
         # generated.append(artists[random.randint(0,len(artists))])
-        generated = ','.join(sorted(set(generated), key=lambda d: generated.index(d)))
+        generated = ', '.join(sorted(set(generated), key=lambda d: generated.index(d)))
         generated = self.ori_prompt + ', ' + generated
         return generated
 
-    def simple2(self):
-        prompt = open('C:\\Users\\chsjk\\PycharmProjects\\stable-diffusion-webui\\prompt2.txt', encoding='utf-8').read().splitlines()
-        import random
-        return self.ori_prompt + ''.join(random.choice(prompt))
     def fixed(self):
         string = "assasins creed art style, smoke, dark fantasy, art by Glennray Tutor"
         generated = self.ori_prompt + ', ' + string
