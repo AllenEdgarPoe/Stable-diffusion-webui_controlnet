@@ -655,6 +655,8 @@ class Script(scripts.Script):
             
             print(f"Loading preprocessor: {module}")
             preprocessor = self.preprocessor[module]
+            H_ori, W_ori = input_image.shape[0]*(512//input_image.shape[0]), input_image.shape[1]*(512//input_image.shape[0])
+            p.width, p.height = W_ori, H_ori
             h, w, bsz = p.height, p.width, p.batch_size
             if pres > 64:
                 detected_map = preprocessor(input_image, res=pres, thr_a=pthr_a, thr_b=pthr_b)
@@ -671,25 +673,25 @@ class Script(scripts.Script):
             detected_map = rearrange(torch.from_numpy(detected_map), 'h w c -> c h w')
 
             ## Modified
-            H_ori, W_ori = input_image.shape[0], input_image.shape[1]
-            if H_ori>1024 or W_ori<1024:
-                if resize_mode == "Scale to Fit (Inner Fit)":
-                    transform = Compose([
-                        Resize(h if h<w else w, interpolation=InterpolationMode.BICUBIC),
-                        CenterCrop(size=(h, w)),
-                    ])
-                    control = transform(control)
-                    detected_map = transform(detected_map)
-                elif resize_mode == "Envelope (Outer Fit)":
-                    transform = Compose([
-                        Resize(h if h>w else w, interpolation=InterpolationMode.BICUBIC),
-                        CenterCrop(size=(h, w))
-                    ])
-                    control = transform(control)
-                    detected_map = transform(detected_map)
-                else:
-                    control = Resize((h,w), interpolation=InterpolationMode.BICUBIC)(control)
-                    detected_map = Resize((h,w), interpolation=InterpolationMode.BICUBIC)(detected_map)
+
+            # if p.width>1024 or W_ori<1024:
+            if resize_mode == "Scale to Fit (Inner Fit)":
+                transform = Compose([
+                    Resize(h if h<w else w, interpolation=InterpolationMode.BICUBIC),
+                    CenterCrop(size=(h, w)),
+                ])
+                control = transform(control)
+                detected_map = transform(detected_map)
+            elif resize_mode == "Envelope (Outer Fit)":
+                transform = Compose([
+                    Resize(h if h>w else w, interpolation=InterpolationMode.BICUBIC),
+                    CenterCrop(size=(h, w))
+                ])
+                control = transform(control)
+                detected_map = transform(detected_map)
+            else:
+                control = Resize((h,w), interpolation=InterpolationMode.BICUBIC)(control)
+                detected_map = Resize((h,w), interpolation=InterpolationMode.BICUBIC)(detected_map)
             
             # for log use
             detected_map = rearrange(detected_map, 'c h w -> h w c').numpy().astype(np.uint8)
@@ -710,7 +712,7 @@ class Script(scripts.Script):
     def postprocess(self, p, processed, is_img2img=False, *args):
         # if shared.opts.data.get("control_net_detectmap_autosaving", False) and self.latest_network is not None:
         for detect_map, module in self.detected_map:
-            detectmap_dir = os.path.join(shared.opts.data.get("input", False), module)
+            detectmap_dir = default_detectedmap_dir
             if not os.path.isabs(detectmap_dir):
                 detectmap_dir = os.path.join(p.outpath_samples, detectmap_dir)
             os.makedirs(detectmap_dir, exist_ok=True)

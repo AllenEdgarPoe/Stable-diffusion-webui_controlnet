@@ -1,0 +1,2 @@
+a butterfly
+Steps: 20, Sampler: Euler a, CFG scale: 7, Seed: 2259424443, Size: 260x194, Model hash: de56139bbc, Model: discoDiffusion_, ControlNet Enabled: True, ControlNet Module: scribble, ControlNet Model: control_sd15_scribble [fef5e48e], ControlNet Weight: 1, ControlNet Guidance Start: 0, ControlNet Guidance End: 1
