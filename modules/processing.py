@@ -666,7 +666,7 @@ def process_images_inner(p: StableDiffusionProcessing) -> Processed:
                 if p.scripts is not None:
                     pp = scripts.PostprocessImageArgs(image)
                     p.scripts.postprocess_image(p, pp)
-                    image = pp.image
+                    image = pp.image   #result image
 
                 if p.color_corrections is not None and i < len(p.color_corrections):
                     if opts.save and not p.do_not_save_samples and opts.save_images_before_color_correction:
@@ -678,6 +678,9 @@ def process_images_inner(p: StableDiffusionProcessing) -> Processed:
 
                 if opts.samples_save and not p.do_not_save_samples:
                     images.save_image(image, p.outpath_samples, "", seeds[i], prompts[i], opts.samples_format, info=infotext(n, i), p=p)
+
+                    ## addition
+                    from annotator.util import HWC3
 
                 text = infotext(n, i)
                 infotexts.append(text)

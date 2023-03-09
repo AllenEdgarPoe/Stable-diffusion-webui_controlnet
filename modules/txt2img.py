@@ -48,8 +48,8 @@ def txt2img(id_task: str, prompt: str, negative_prompt: str, prompt_styles, step
     p.scripts = modules.scripts.scripts_txt2img
     p.script_args = args
 
-    p.prompt = PromptGenerator(p.prompt).simple()
-    print(f"Generated prompt: {p.prompt}")
+    # p.prompt = PromptGenerator(p.prompt).simple()
+    # print(f"Generated prompt: {p.prompt}")
     if cmd_opts.enable_console_prompts:
         print(f"\ntxt2img: {prompt}", file=shared.progress_print_out)
 
