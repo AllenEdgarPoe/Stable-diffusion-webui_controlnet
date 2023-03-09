@@ -672,15 +672,7 @@ class Script(scripts.Script):
 
             ## Modified
             H_ori, W_ori = input_image.shape[0], input_image.shape[1]
-            if H_ori<2048 and W_ori<2048:
-                transform = Compose([
-                    Resize(h if h < w else w, interpolation=InterpolationMode.BICUBIC),
-                    CenterCrop(size=(h, w)),
-                ])
-                control = transform(control)
-                detected_map = transform(detected_map)
-
-            else:
+            if H_ori>1024 or W_ori<1024:
                 if resize_mode == "Scale to Fit (Inner Fit)":
                     transform = Compose([
                         Resize(h if h<w else w, interpolation=InterpolationMode.BICUBIC),
@@ -716,14 +708,14 @@ class Script(scripts.Script):
             swap_img2img_pipeline(p)
 
     def postprocess(self, p, processed, is_img2img=False, *args):
-        if shared.opts.data.get("control_net_detectmap_autosaving", False) and self.latest_network is not None:
-            for detect_map, module in self.detected_map:
-                detectmap_dir = os.path.join(shared.opts.data.get("control_net_detectedmap_dir", False), module)
-                if not os.path.isabs(detectmap_dir):
-                    detectmap_dir = os.path.join(p.outpath_samples, detectmap_dir)
-                os.makedirs(detectmap_dir, exist_ok=True)
-                img = Image.fromarray(detect_map)
-                save_image(img, detectmap_dir, module)
+        # if shared.opts.data.get("control_net_detectmap_autosaving", False) and self.latest_network is not None:
+        for detect_map, module in self.detected_map:
+            detectmap_dir = os.path.join(shared.opts.data.get("input", False), module)
+            if not os.path.isabs(detectmap_dir):
+                detectmap_dir = os.path.join(p.outpath_samples, detectmap_dir)
+            os.makedirs(detectmap_dir, exist_ok=True)
+            img = Image.fromarray(detect_map)
+            save_image(img, detectmap_dir, module)
 
         is_img2img_batch_tab = is_img2img and img2img_tab_tracker.submit_img2img_tab == 'img2img_batch_tab'
         no_detectmap_opt = shared.opts.data.get("control_net_no_detectmap", False)
@@ -770,7 +762,7 @@ def on_ui_settings():
     shared.opts.add_option("control_net_no_detectmap", shared.OptionInfo(
         False, "Do not append detectmap to output", gr.Checkbox, {"interactive": True}, section=section))
     shared.opts.add_option("control_net_detectmap_autosaving", shared.OptionInfo(
-        False, "Allow detectmap auto saving", gr.Checkbox, {"interactive": True}, section=section))
+        True, "Allow detectmap auto saving", gr.Checkbox, {"interactive": True}, section=section))
     shared.opts.add_option("control_net_only_midctrl_hires", shared.OptionInfo(
         True, "Use mid-control on highres pass (second pass)", gr.Checkbox, {"interactive": True}, section=section))
     shared.opts.add_option("control_net_allow_script_control", shared.OptionInfo(

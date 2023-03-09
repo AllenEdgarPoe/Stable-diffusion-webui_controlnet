@@ -613,8 +613,14 @@ def process_images_inner(p: StableDiffusionProcessing) -> Processed:
             # infotext could be modified by that callback
             # Example: a wildcard processed by process_batch sets an extra model
             # strength, which is saved as "Model Strength: 1.0" in the infotext
+
+            # add param
             if n == 0:
-                with open(os.path.join(paths.data_path, "params.txt"), "w", encoding="utf8") as file:
+                import time
+                timestr = time.strftime("%Y%m%d-%H%M%S")
+                os.makedirs('params', exist_ok=True)
+                path = os.path.join(paths.data_path, 'params', timestr+'.txt')
+                with open(path, "w", encoding="utf8") as file:
                     processed = Processed(p, [], p.seed, "")
                     file.write(processed.infotext(p, 0))
 

@@ -1,0 +1,2 @@
+a butterfly
+Steps: 20, Sampler: Euler a, CFG scale: 7, Seed: 1616841146, Size: 584x512, Model hash: 17222200a7, Model: cheeseDaddys_20DeliberateAdded, ControlNet Enabled: True, ControlNet Module: scribble, ControlNet Model: control_sd15_scribble [fef5e48e], ControlNet Weight: 1, ControlNet Guidance Start: 0, ControlNet Guidance End: 1
